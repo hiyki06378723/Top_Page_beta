@@ -1,698 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Dashboard</title>
-
-  <style>
-
-    body {
-      margin: 0;
-      padding: 30px;
-      background: #111827;
-      color: white;
-      font-family: sans-serif;
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    .top {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
-    }
-
-    .clock {
-      font-size: 40px;
-      font-weight: bold;
-    }
-
-    .date {
-      color: #cbd5e1;
-      margin-top: 5px;
-    }
-
-    .weather {
-
-  background:
-    rgba(255,255,255,.12);
-
-  backdrop-filter:
-    blur(12px);
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  padding: 14px 18px;
-
-  border-radius: 14px;
-}
-
-    .search input {
-      width: 320px;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-    }
-
-    .section {
-
-  background:
-    rgba(31, 41, 55, 0.45);
-
-  backdrop-filter:
-    blur(14px);
-
-  -webkit-backdrop-filter:
-    blur(14px);
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  box-shadow:
-    0 8px 32px rgba(0,0,0,.25);
-
-  padding: 20px;
-
-  border-radius: 20px;
-
-  margin-bottom: 30px;
-}
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .trash {
-      background: #dc2626;
-      padding: 10px 16px;
-      border-radius: 12px;
-    }
-
-    .trash.drag-over {
-      transform: scale(1.05);
-    }
-
-    .form {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 20px 0;
-    }
-
-    .form input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-    }
-
-    button {
-      border: none;
-      background: #2563eb;
-      color: white;
-      padding: 12px 18px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns:
-        repeat(auto-fill, minmax(220px, 1fr));
-
-      gap: 15px;
-    }
-
-    .card {
-
-  background:
-    rgba(55, 65, 81, 0.45);
-
-  backdrop-filter:
-    blur(10px);
-
-  border:
-    1px solid rgba(255,255,255,.06);
-
-  box-shadow:
-    0 4px 20px rgba(0,0,0,.2);
-
-  border-radius: 18px;
-
-  padding: 22px;
-
-  transition: .2s;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  text-align: center;
-
-  min-height: 170px;
-}
-
-.card:hover {
-  transform:
-    translateY(-5px)
-    scale(1.02);
-
-  background:
-    rgba(75,85,99,.95);
-}
-
-.icon-link {
-  display: inline-block;
-}
-
-    .card.dragging {
-      opacity: .5;
-    }
-
-    .card-top {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .card img {
-  width: 64px;
-  height: 64px;
-
-  border-radius: 16px;
-
-  background: white;
-
-  padding: 10px;
-
-  object-fit: contain;
-
-  margin-bottom: 16px;
-}
-
-    .card a {
-  color: white;
-
-  text-decoration: none;
-
-  font-weight: bold;
-
-  font-size: 17px;
-
-  margin-top: 8px;
-}
-
-    .url {
-      margin-top: 10px;
-      color: #cbd5e1;
-      font-size: 13px;
-      word-break: break-all;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 160px;
-      border-radius: 12px;
-      border: none;
-      padding: 14px;
-    }
-
-  </style>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020" id="themeColorMeta">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+<title>収支管理</title>
 </head>
-
 <body>
+<header class="topbar">
+  <h1>収支管理</h1>
+  <nav class="topnav">
+    <button class="tab active" data-page="calendar">カレンダー</button>
+    <button class="tab" data-page="report">日報</button>
+    <button class="tab" data-page="stats">分析</button>
+  </nav>
+</header>
 
-  <h1>My Dashboard</h1>
-
-  <div class="top">
-
-    <div>
-      <div class="clock" id="clock"></div>
-      <div class="date" id="date"></div>
-    </div>
-
-    <div class="weather" id="weather">
-      Loading...
-    </div>
-
-    <div class="search">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Google検索..."
-      >
-    </div>
-
+<main>
+<section id="calendarPage" class="page active">
+  <div class="monthbar">
+    <button id="prevMonth">‹</button><h2 id="monthTitle"></h2><button id="nextMonth">›</button>
   </div>
-
-  <div class="section">
-
-    <div class="header">
-
-      <h2>Bookmarks</h2>
-
-      <div class="trash" id="trash">
-        🗑 ゴミ箱
-      </div>
-
-    </div>
-
-    <div class="form">
-
-      <input
-        type="text"
-        id="siteName"
-        placeholder="サイト名"
-      >
-
-      <input
-        type="text"
-        id="siteUrl"
-        placeholder="https://example.com"
-      >
-
-      <button id="addBtn">
-        追加
-      </button>
-
-    </div>
-
-    <div class="grid" id="bookmarks"></div>
-
+  <div class="summary">
+    <div><span>月間収支</span><strong id="monthNet">¥0</strong></div>
+    <div><span>勝ち日</span><strong id="winDays">0</strong></div>
+    <div><span>負け日</span><strong id="loseDays">0</strong></div>
+    <div><span>投資</span><strong id="monthInvest">¥0</strong></div>
   </div>
-
-  
-<div class="section">
-
-  <h2>Background</h2>
-
-  <div class="form">
-
-    <input
-      type="text"
-      id="bgUrl"
-      placeholder="背景画像URL"
-    >
-
-    <button id="bgBtn">
-      背景変更
-    </button>
-
+  <div class="card">
+    <div class="cardhead"><h3>カレンダー</h3><button id="todayBtn" class="small">今月</button></div>
+    <div class="weekday"><b>日</b><b>月</b><b>火</b><b>水</b><b>木</b><b>金</b><b>土</b></div>
+    <div id="calendar" class="calendar"></div>
   </div>
+  <div class="card"><h3>収支推移</h3><canvas id="calendarChart" height="220"></canvas></div>
+</section>
 
+<section id="reportPage" class="page">
+  <div class="reportHead">
+    <button id="reportPrev">‹</button>
+    <div><span>日報</span><h2 id="reportDate">2026/09/12</h2></div>
+    <button id="reportNext">›</button>
+  </div>
+  <div class="reportHero card">
+    <div><span>1日の収支</span><strong id="reportNet">¥0</strong></div>
+    <button type="button" id="reportAdd" class="primary" onclick="openForm(dateKey(reportDate))">＋ 記録</button>
+  </div>
+  <div class="summary reportSummary">
+    <div><span>総投資</span><strong id="reportInvest">¥0</strong></div>
+    <div><span>総回収</span><strong id="reportReturn">¥0</strong></div>
+    <div><span>勝ち</span><strong id="reportWins">0</strong></div>
+    <div><span>負け</span><strong id="reportLosses">0</strong></div>
+  </div>
+  <div class="card">
+    <div class="cardhead"><h3>この日の機種別</h3><span id="reportCount" class="neutral smallText">0件</span></div>
+    <div id="reportMachines"></div>
+  </div>
+  <div class="card">
+    <div class="cardhead"><h3>全記録</h3><button type="button" id="reportAdd2" class="small primary" onclick="openForm(dateKey(reportDate))">＋追加</button></div>
+    <div id="reportEntries"></div>
+  </div>
+</section>
+
+<section id="settingsPage" class="page">
+  <div class="card">
+    <div class="cardhead"><h2>データ・機種設定</h2><span id="machineSyncStatus" class="smallText neutral">機種データ確認中</span></div>
+    <p class="settingsNote">普段の収支管理はオフラインで使えます。オンライン時だけ機種データを確認・更新します。</p>
+    <div class="settingsGrid">
+      <button id="updateMachines" class="primary">↻ 機種データを更新</button>
+      <button id="exportData">↓ 収支をバックアップ</button>
+      <label class="fileButton">↑ バックアップから復元<input id="importData" type="file" accept="application/json,.json"></label>
+    </div>
+    <div class="backupInfo">最終機種データ更新：<b id="machineUpdatedAt">未更新</b><br>収支データ：端末内に保存</div>
+  </div>
+  <div class="card">
+    <div class="cardhead"><h3>デザイン</h3><span id="themeLabel" class="smallText neutral">ダーク</span></div>
+    <p class="settingsNote">スマホでも見やすいよう、ダーク系／ライト系のデザインを切り替えられます。設定はこの端末に保存されます。</p>
+    <div class="themeSwitch" role="group" aria-label="デザイン切り替え">
+      <button type="button" id="themeDark" class="themeBtn active">🌙 ダーク</button>
+      <button type="button" id="themeLight" class="themeBtn">☀️ ライト</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>機種データについて</h3>
+    <p class="settingsNote">現在はアプリ内の機種データを使用し、更新時にオンラインの更新データを確認します。更新できない場合は、端末に保存済みの機種データをそのまま使用します。</p>
+    <div class="syncSource">更新元：P-WORLDの機種情報を参考にした更新データ<br><b id="customMachineCount">ユーザー追加：0機種</b><br>手入力した機種は自動的にこの端末へ保存され、次回から選択候補に表示されます。</div>
+  </div>
+</section>
+
+<section id="statsPage" class="page">
+  <div class="card">
+    <h2>分析</h2>
+    <div class="filters">
+      <label>期間<select id="period"><option value="month">月毎</option><option value="year">年毎</option><option value="all">全期間</option></select><input id="periodMonth" type="month"><select id="periodYear" class="hiddenField"></select></label>
+      <label>集計<select id="group"><option value="day" selected>日別</option><option value="machine">台別</option><option value="genre">ジャンル別</option></select></label><label id="analysisTargetWrap">対象<select id="analysisTarget" class="hiddenField"><option value="">対象を選択してください</option></select></label>
+    </div>
+  </div>
+  <div class="summary">
+    <div><span>収支</span><strong id="statNet">¥0</strong></div>
+    <div><span>総投資</span><strong id="statInvest">¥0</strong></div>
+    <div><span>総回収</span><strong id="statReturn">¥0</strong></div>
+    <div><span>勝率</span><strong id="statWinRate">0%</strong></div>
+  </div>
+  <div id="detailStats" class="machineStats"></div>
+  <div class="card"><h3>収支推移</h3><p class="smallText">日別：日ごとの累計収支 ／ 台別・ジャンル別：選択した対象の累計収支</p><canvas id="statsChart" height="250"></canvas></div>
+  <div class="card">
+    <div class="cardhead detailHead"><h3>明細</h3><div class="detailTools"><select id="detailSort" aria-label="明細の並び替え"><option value="dateDesc">日付の新しい順</option><option value="dateAsc">日付の古い順</option><option value="netDesc">収支額の大きい順</option><option value="netAsc">収支額の小さい順</option><option value="investDesc">投資額の大きい順</option><option value="investAsc">投資額の小さい順</option><option value="returnDesc">回収額の大きい順</option><option value="returnAsc">回収額の小さい順</option></select><button type="button" id="addFromStats" class="primary small" onclick="openForm()">＋入力</button></div></div>
+    <div id="statsList"></div>
+  </div>
+</section>
+</main>
+
+<div class="bottomNav">
+  <button class="tab active" data-page="calendar"><span>▦</span>カレンダー</button>
+  <button class="tab" data-page="report"><span>▤</span>日報</button>
+  <button class="tab" data-page="stats"><span>◒</span>分析</button>
+  <button class="tab" data-page="settings"><span>⚙</span>設定</button>
 </div>
 
-
-  <script>
-
-    class Dashboard {
-
-      constructor() {
-
-        this.bookmarks =
-          JSON.parse(
-            localStorage.getItem("bookmarks")
-          ) || [
-            {
-              name: "YouTube",
-              url: "https://youtube.com"
-            }
-          ];
-
-        this.draggedIndex = null;
-
-        this.init();
-      }
-
-      init() {
-
-        this.cacheElements();
-
-        this.bindEvents();
-
-        this.renderBookmarks();
-
-        this.startClock();
-
-        this.loadWeather();
-       
-        this.loadBackground();
-      }
-
-      cacheElements() {
-
-        this.bookmarksEl =
-          document.getElementById("bookmarks");
-
-        this.trashEl =
-          document.getElementById("trash");
-      }
-
-      bindEvents() {
-
-
-
-document.getElementById("bgBtn")
-  .addEventListener("click", () => {
-
-  this.changeBackground();
-});
-
-
-
-        // Add bookmark
-
-        document.getElementById("addBtn")
-          .addEventListener("click", () => {
-
-          this.addBookmark();
-        });
-
-        // Search
-
-        document.getElementById("searchInput")
-          .addEventListener("keydown", e => {
-
-          if (e.key === "Enter") {
-
-            location.href =
-              `https://www.google.com/search?q=${encodeURIComponent(e.target.value)}`;
-          }
-        });
-
-
-
-        // Trash
-
-        this.trashEl.addEventListener("dragover", e => {
-
-          e.preventDefault();
-
-          this.trashEl.classList.add("drag-over");
-        });
-
-        this.trashEl.addEventListener("dragleave", () => {
-
-          this.trashEl.classList.remove("drag-over");
-        });
-
-        this.trashEl.addEventListener("drop", () => {
-
-          if (this.draggedIndex === null) return;
-
-          this.bookmarks.splice(this.draggedIndex, 1);
-
-          this.saveBookmarks();
-
-          this.renderBookmarks();
-
-          this.draggedIndex = null;
-
-          this.trashEl.classList.remove("drag-over");
-        });
-      }
-
-      addBookmark() {
-
-        const name =
-          document.getElementById("siteName").value;
-
-        const url =
-          document.getElementById("siteUrl").value;
-
-        if (!name || !url) return;
-
-        this.bookmarks.push({ name, url });
-
-        this.saveBookmarks();
-
-        this.renderBookmarks();
-
-        document.getElementById("siteName").value = "";
-
-        document.getElementById("siteUrl").value = "";
-      }
-
-      saveBookmarks() {
-
-        localStorage.setItem(
-          "bookmarks",
-          JSON.stringify(this.bookmarks)
-        );
-      }
-
-      renderBookmarks() {
-
-        this.bookmarksEl.innerHTML = "";
-
-        this.bookmarks.forEach((bookmark, index) => {
-
-          const domain =
-            new URL(bookmark.url).hostname;
-
-          const favicon =
-            `https://icon.horse/icon/${domain}`;
-
-          const card =
-            document.createElement("div");
-
-          card.className = "card";
-
-          card.draggable = true;
-
-          card.dataset.index = index;
-
-          card.innerHTML = `
-  <a
-    href="${bookmark.url}"
-    target="_blank"
-    class="icon-link"
-  >
-
-    <img src="${favicon}">
-
-  </a>
-
-  <a
-    href="${bookmark.url}"
-    target="_blank"
-  >
-    ${bookmark.name}
-  </a>
-`;
-
-          // drag start
-
-          card.addEventListener("dragstart", () => {
-
-            this.draggedIndex = index;
-
-            card.classList.add("dragging");
-          });
-
-          // drag end
-
-          card.addEventListener("dragend", () => {
-
-            card.classList.remove("dragging");
-          });
-
-          // drag over
-
-          card.addEventListener("dragover", e => {
-
-            e.preventDefault();
-          });
-
-          // drop
-
-          card.addEventListener("drop", e => {
-
-            e.preventDefault();
-
-            const targetIndex =
-              Number(card.dataset.index);
-
-            if (this.draggedIndex === targetIndex)
-              return;
-
-            const moved =
-              this.bookmarks.splice(
-                this.draggedIndex,
-                1
-              )[0];
-
-            this.bookmarks.splice(
-              targetIndex,
-              0,
-              moved
-            );
-
-            this.saveBookmarks();
-
-            this.renderBookmarks();
-          });
-
-          this.bookmarksEl.appendChild(card);
-        });
-      }
-
-      
-      startClock() {
-
-        const update = () => {
-
-          const now = new Date();
-
-          document.getElementById("clock")
-            .textContent =
-            now.toLocaleTimeString("ja-JP");
-
-          document.getElementById("date")
-            .textContent =
-            now.toLocaleDateString("ja-JP", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              weekday: "long"
-            });
-        };
-
-        update();
-
-        setInterval(update, 1000);
-      }
-
-      async loadWeather() {
-
-  if (!navigator.geolocation) {
-
-    document.getElementById("weather")
-      .textContent =
-      "位置情報非対応";
-
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-
-    async position => {
-
-      try {
-
-        const lat =
-          position.coords.latitude;
-
-        const lon =
-          position.coords.longitude;
-
-        // 天気取得
-
-        const weatherRes =
-          await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
-          );
-
-        const weatherData =
-          await weatherRes.json();
-
-        // 都市名取得
-
-        const geoRes =
-          await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-          );
-
-        const geoData =
-          await geoRes.json();
-
-        const city =
-          geoData.address.city ||
-          geoData.address.town ||
-          geoData.address.village ||
-          "Unknown";
-
-        const weather =
-          weatherData.current_weather;
-
-        document.getElementById("weather")
-          .innerHTML =
-          `
-          📍 ${city}
-          <br>
-          🌤 ${weather.temperature}°C
-          <br>
-          💨 ${weather.windspeed} km/h
-          `;
-
-      } catch {
-
-        document.getElementById("weather")
-          .textContent =
-          "天気取得失敗";
-      }
-    },
-
-    () => {
-
-      document.getElementById("weather")
-        .textContent =
-        "位置情報許可が必要";
-    }
-  );
-}
-
-      loadBackground() {
-
-  const savedBg =
-    localStorage.getItem("background");
-
-  if (!savedBg) return;
-
-  document.body.style.backgroundImage =
-    `
-    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.7)),
-    url("${savedBg}")
-    `;
-}
-
-changeBackground() {
-
-  const url =
-    document.getElementById("bgUrl").value;
-
-  if (!url) return;
-
-  localStorage.setItem(
-    "background",
-    url
-  );
-
-  document.body.style.backgroundImage =
-    `
-    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.7)),
-    url("${url}")
-    `;
-}
-    }
-
-    new Dashboard();
-
-  </script>
-
+<dialog id="entryDialog">
+<form id="entryForm" novalidate>
+<input type="hidden" id="entryId" value="">
+  <div class="dialogHead"><h2 id="dialogTitle">収支を入力</h2><button type="button" id="closeDialog">×</button></div>
+  <div class="batchNotice">1日の記録をまとめて入力できます。「＋ 機種を追加」で複数機種を続けて登録できます。持ち玉は「前の機種の持ち玉を引き継ぐ」で次の機種へ渡せます。</div>
+  <label>日付<input id="entryDate" type="date" required></label>
+  <div id="entryRows"></div>
+  <button type="button" id="addEntryRow" class="ghost full addRowBtn">＋ 機種を追加</button>
+  <div class="batchTotal card">
+    <div><span>合計投資</span><strong id="batchInvest">¥0</strong></div>
+    <div><span>合計回収</span><strong id="batchReturn">¥0</strong></div>
+    <div><span>合計収支</span><strong id="batchNet">¥0</strong></div>
+  </div>
+  <div class="dialogActions"><button type="button" id="deleteEntry" class="danger">削除</button><button type="button" id="cancelDialog">キャンセル</button><button type="submit" class="primary">まとめて保存</button></div>
+</form>
+</dialog>
+
+<script src="app.js"></script>
 </body>
 </html>
